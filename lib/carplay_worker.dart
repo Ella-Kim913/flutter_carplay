@@ -27,7 +27,7 @@ class FlutterCarplay {
   static final FlutterCarPlayController _carPlayController =
       FlutterCarPlayController();
 
-  /// CarPlay main bridge as a listener from CarPlay and native side.
+  /// CarPlay main bridge as a listenSer from CarPlay and native side.
   late final StreamSubscription<dynamic>? _eventBroadcast;
 
   /// Current CarPlay and mobile app connection status.
@@ -289,7 +289,7 @@ class FlutterCarplay {
     }
   }
 
-    /// Navigate to the shared instance of the NowPlaying Template
+  /// Navigate to the shared instance of the NowPlaying Template
   ///
   /// - If animated is true, CarPlay animates the transition between templates.
   static Future<bool> showSharedNowPlaying({
