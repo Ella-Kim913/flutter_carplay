@@ -178,13 +178,9 @@ public class SwiftFlutterCarplayPlugin: NSObject, FlutterPlugin {
         result(false)
         return
       }
-//<<<<<<< HEAD
-//      FlutterCarPlaySceneDelegate.push(template: CPNowPlayingTemplate.shared, animated: animated)
-//=======
       let template = FCPSharedNowPlayingTemplate()
       SwiftFlutterCarplayPlugin.templateStack.append(template)
       FlutterCarPlaySceneDelegate.push(template: template.get, animated: animated)
-//>>>>>>> icapps/bugfix/#17-completion-handler-not-finished
       result(true)
       break
     case FCPChannelTypes.pushTemplate:
