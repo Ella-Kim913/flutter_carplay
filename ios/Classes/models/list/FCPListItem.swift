@@ -46,8 +46,18 @@ class FCPListItem {
         complete()
       }
     }
-    if image != nil {
-      listItem.setImage(UIImage().fromFlutterAsset(name: image!))
+    if let image = image {
+        if let url = URL(string: image), url.scheme != nil {
+            // Handle the image as a URL
+            loadImageFromUrl(url: url) { downloadedImage in
+                if let downloadedImage = downloadedImage {
+                    listItem.setImage(downloadedImage)
+                }
+            }
+        } else {
+            // Handle the image as an asset
+            listItem.setImage(UIImage().fromFlutterAsset(name: image))
+        }
     }
     if playbackProgress != nil {
       listItem.playbackProgress = playbackProgress!
@@ -63,6 +73,20 @@ class FCPListItem {
     }
     self._super = listItem
     return listItem
+  }
+
+  private func loadImageFromUrl(url: URL, completion: @escaping (UIImage?) -> Void) {
+    DispatchQueue.global().async {
+          if let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
+              DispatchQueue.main.async {
+                  completion(image)
+              }
+          } else {
+              DispatchQueue.main.async {
+                  completion(nil)
+              }
+          }
+      }
   }
   
   public func stopHandler() {
@@ -82,10 +106,21 @@ class FCPListItem {
       self._super?.setDetailText(detailText)
       self.detailText = detailText
     }
-    if image != nil {
-      self._super?.setImage(UIImage().fromFlutterAsset(name: image!))
-      self.image = image
+    if let image = image {
+        if let url = URL(string: image), url.scheme != nil {
+            // Handle the image as a URL
+            loadImageFromUrl(url: url) { downloadedImage in
+                if let downloadedImage = downloadedImage {
+                    self._super?.setImage(downloadedImage)
+                }
+            }
+        } else {
+            // Handle the image as an asset
+            self._super?.setImage(UIImage().fromFlutterAsset(name: image))
+        }
+        self.image = image
     }
+    
     if playbackProgress != nil {
       self._super?.playbackProgress = playbackProgress!
       self.playbackProgress = playbackProgress
