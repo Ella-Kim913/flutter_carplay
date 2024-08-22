@@ -46,18 +46,16 @@ class FCPListItem {
         complete()
       }
     }
-    if let image = image {
-        if let url = URL(string: image), url.scheme != nil {
-            // Handle the image as a URL
-            loadImageFromUrl(url: url) { downloadedImage in
-                if let downloadedImage = downloadedImage {
-                    listItem.setImage(downloadedImage)
-                }
-            }
+    // Load the image from URL or fallback to default image if loading fails
+    if let image = image, let url = URL(string: image) {
+      loadImageFromUrl(url: url) { downloadedImage in
+        if let downloadedImage = downloadedImage {
+          listItem.setImage(downloadedImage)
         } else {
-            // Handle the image as an asset
-            listItem.setImage(UIImage().fromFlutterAsset(name: image))
+          // Set the default image if the download fails
+            listItem.setImage(UIImage().fromFlutterAsset(name: "images/airBreakArt"))
         }
+      }
     }
     if playbackProgress != nil {
       listItem.playbackProgress = playbackProgress!
@@ -75,19 +73,21 @@ class FCPListItem {
     return listItem
   }
 
-  private func loadImageFromUrl(url: URL, completion: @escaping (UIImage?) -> Void) {
-    DispatchQueue.global().async {
-          if let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
-              DispatchQueue.main.async {
-                  completion(image)
-              }
-          } else {
-              DispatchQueue.main.async {
-                  completion(nil)
-              }
-          }
-      }
-  }
+    private func loadImageFromUrl(url: URL, completion: @escaping (UIImage?) -> Void) {
+        // Using URLSession's dataTask to fetch the image data asynchronously
+        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+            // Check if the request was successful and we have valid data
+            guard let data = data, error == nil, let image = UIImage(data: data) else {
+                // If the request failed, return nil
+                completion(nil)
+                return
+            }
+            // Return the image on completion
+            completion(image)
+        }
+        // Start the data task
+        task.resume()
+    }
   
   public func stopHandler() {
     guard self.completeHandler != nil else {
@@ -106,19 +106,18 @@ class FCPListItem {
       self._super?.setDetailText(detailText)
       self.detailText = detailText
     }
-    if let image = image {
-        if let url = URL(string: image), url.scheme != nil {
-            // Handle the image as a URL
-            loadImageFromUrl(url: url) { downloadedImage in
-                if let downloadedImage = downloadedImage {
-                    self._super?.setImage(downloadedImage)
-                }
-            }
+    
+    // Update image if provided, otherwise fallback to default
+    if let image = image, let url = URL(string: image) {
+      loadImageFromUrl(url: url) { downloadedImage in
+        if let downloadedImage = downloadedImage {
+          self._super?.setImage(downloadedImage)
         } else {
-            // Handle the image as an asset
-            self._super?.setImage(UIImage().fromFlutterAsset(name: image))
+          // Set the default image if the download fails
+          self._super?.setImage(UIImage().fromFlutterAsset(name: "images/airBreakArt"))
         }
-        self.image = image
+      }
+      self.image = image
     }
     
     if playbackProgress != nil {
