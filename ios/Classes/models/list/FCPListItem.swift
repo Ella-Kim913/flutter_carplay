@@ -46,26 +46,16 @@ class FCPListItem {
         complete()
       }
     }
-    // Load the image from URL or fallback to default image if loading fails
-    if image.starts(with: "http"), let url = URL(string: image) {
-
-        guard let image = image else {
-            // Set default image if no image path is provided
-            listItem.setImage(UIImage().fromFlutterAsset(name: "images/airBreakArt"))
-            return
-        }
-        // Load the image from the URL
-        loadImageFromUrl(url: url) { downloadedImage in
-            if let downloadedImage = downloadedImage {
-                listItem.setImage(downloadedImage)
-            } else {
-                // Set fallback asset image if the download fails
-                listItem.setImage(UIImage().fromFlutterAsset(name: image))
+    if let image = image {
+        if image.starts(with: "http"), let url = URL(string: image) {
+            loadImageFromUrl(url: url) { downloadedImage in
+                listItem.setImage(downloadedImage ?? UIImage().fromFlutterAsset(name: "images/airBreakArt"))
             }
+        } else {
+            listItem.setImage(UIImage().fromFlutterAsset(name: image))
         }
-    } else {
-        // Set the local image from Flutter assets
-        listItem.setImage(UIImage().fromFlutterAsset(name: image))
+     } else {
+         listItem.setImage(UIImage().fromFlutterAsset(name: "images/airBreakArt"))
     }
     if playbackProgress != nil {
       listItem.playbackProgress = playbackProgress!
@@ -117,26 +107,16 @@ class FCPListItem {
       self.detailText = detailText
     }
     
-    // Load the image from URL or fallback to default image if loading fails
-    if image.starts(with: "http"), let url = URL(string: image) {
-
-        guard let image = image else {
-            // Set default image if no image path is provided
-            listItem.setImage(UIImage().fromFlutterAsset(name: "images/airBreakArt"))
-            return
-        }
-        // Load the image from the URL
-        loadImageFromUrl(url: url) { downloadedImage in
-            if let downloadedImage = downloadedImage {
-                listItem.setImage(downloadedImage)
-            } else {
-                // Set fallback asset image if the download fails
-                listItem.setImage(UIImage().fromFlutterAsset(name: image))
+    if let image = image {
+        if image.starts(with: "http"), let url = URL(string: image) {
+            loadImageFromUrl(url: url) { downloadedImage in
+                 self._super?.setImage(downloadedImage ?? UIImage().fromFlutterAsset(name: "images/airBreakArt"))
             }
+        } else {
+             self._super?.setImage(UIImage().fromFlutterAsset(name: image))
         }
     } else {
-        // Set the local image from Flutter assets
-        listItem.setImage(UIImage().fromFlutterAsset(name: image))
+         self._super?.setImage(UIImage().fromFlutterAsset(name: "images/airBreakArt"))
     }
     
     if playbackProgress != nil {
